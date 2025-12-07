@@ -1,0 +1,13 @@
+Este projeto será feito usando arquitetura hexagonal com os modulos abaixo:
+- domain (Use case, ports and adapters usando driven / driver)
+- driven
+-- event-producer (kafka)
+-- persistence (jpa + postgreSQL)
+-- rest-client (non-block http client)
+- driver
+-- event-consumer (kafka)
+-- rest-server (restful api)
+
+Cada driver deve ter sua própria pipeline de deploy isolado com suas configurações e pode importar os drivens e o domain conforme necessário.
+Crie a estrutura conforme definido e a entidade User(name, email, phone, birthday) como exemplo para essa arquitetura.
+Caso tenha dúvida, me pergunte para que possa ajudar na tomada de decisão com relação ao projeto.
