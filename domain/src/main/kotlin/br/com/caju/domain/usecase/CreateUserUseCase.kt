@@ -4,7 +4,6 @@ import br.com.caju.domain.model.User
 import br.com.caju.domain.port.driven.EventPublisher
 import br.com.caju.domain.port.driven.UserCreatedEvent
 import br.com.caju.domain.port.driven.UserRepository
-import br.com.caju.domain.port.driver.UserManagement
 
 class CreateUserUseCase(
     private val userRepository: UserRepository,

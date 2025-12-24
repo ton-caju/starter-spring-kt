@@ -34,6 +34,6 @@ subprojects {
 		val implementation by configurations
 		val testImplementation by configurations
 
-		implementation(platform("org.springframework.boot:spring-boot-dependencies:4.0.0"))
+		implementation(platform("org.springframework.boot:spring-boot-dependencies:4.0.1"))
 	}
 }

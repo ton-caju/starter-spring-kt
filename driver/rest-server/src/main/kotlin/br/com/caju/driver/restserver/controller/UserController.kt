@@ -1,10 +1,7 @@
 package br.com.caju.driver.restserver.controller
 
 import br.com.caju.domain.model.User
-import br.com.caju.domain.usecase.CreateUserUseCase
-import br.com.caju.domain.usecase.DeleteUserUseCase
-import br.com.caju.domain.usecase.GetUserUseCase
-import br.com.caju.domain.usecase.UpdateUserUseCase
+import br.com.caju.domain.port.driver.UserManagement
 import br.com.caju.driver.restserver.dto.UserRequest
 import br.com.caju.driver.restserver.dto.UserResponse
 import jakarta.validation.Valid
@@ -16,10 +13,7 @@ import java.util.UUID
 @RestController
 @RequestMapping("/api/users")
 class UserController(
-    private val createUserUseCase: CreateUserUseCase,
-    private val getUserUseCase: GetUserUseCase,
-    private val updateUserUseCase: UpdateUserUseCase,
-    private val deleteUserUseCase: DeleteUserUseCase
+    private val userManagement: UserManagement
 ) {
 
     @PostMapping
@@ -30,20 +24,20 @@ class UserController(
             phone = request.phone,
             birthday = request.birthday
         )
-        val createdUser = createUserUseCase.execute(user)
+        val createdUser = userManagement.createUser(user)
         return ResponseEntity.status(HttpStatus.CREATED).body(UserResponse.fromDomain(createdUser))
     }
 
     @GetMapping("/{id}")
     fun getUserById(@PathVariable id: UUID): ResponseEntity<UserResponse> {
-        val user = getUserUseCase.execute(id)
+        val user = userManagement.getUserById(id)
             ?: return ResponseEntity.notFound().build()
         return ResponseEntity.ok(UserResponse.fromDomain(user))
     }
 
     @GetMapping
     fun getAllUsers(): ResponseEntity<List<UserResponse>> {
-        val users = getUserUseCase.executeAll()
+        val users = userManagement.getAllUsers()
         return ResponseEntity.ok(users.map { UserResponse.fromDomain(it) })
     }
 
@@ -59,13 +53,13 @@ class UserController(
             phone = request.phone,
             birthday = request.birthday
         )
-        val updatedUser = updateUserUseCase.execute(user)
+        val updatedUser = userManagement.updateUser(user)
         return ResponseEntity.ok(UserResponse.fromDomain(updatedUser))
     }
 
     @DeleteMapping("/{id}")
     fun deleteUser(@PathVariable id: UUID): ResponseEntity<Void> {
-        deleteUserUseCase.execute(id)
+        userManagement.deleteUser(id)
         return ResponseEntity.noContent().build()
     }
 }
