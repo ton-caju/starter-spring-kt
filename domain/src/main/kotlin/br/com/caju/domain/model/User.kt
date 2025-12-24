@@ -8,7 +8,7 @@ data class User(
     val name: String,
     val email: String,
     val phone: String,
-    val birthday: LocalDate
+    val birthday: LocalDate,
 ) {
     init {
         require(name.isNotBlank()) { "Name cannot be blank" }

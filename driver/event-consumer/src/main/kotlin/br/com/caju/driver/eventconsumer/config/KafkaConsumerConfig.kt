@@ -21,13 +21,14 @@ class KafkaConsumerConfig {
 
     @Bean
     fun consumerFactory(): ConsumerFactory<String, String> {
-        val configProps = mapOf(
-            ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG to bootstrapServers,
-            ConsumerConfig.GROUP_ID_CONFIG to "user-event-consumer-group",
-            ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG to StringDeserializer::class.java,
-            ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG to StringDeserializer::class.java,
-            ConsumerConfig.AUTO_OFFSET_RESET_CONFIG to "earliest"
-        )
+        val configProps =
+            mapOf(
+                ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG to bootstrapServers,
+                ConsumerConfig.GROUP_ID_CONFIG to "user-event-consumer-group",
+                ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG to StringDeserializer::class.java,
+                ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG to StringDeserializer::class.java,
+                ConsumerConfig.AUTO_OFFSET_RESET_CONFIG to "earliest",
+            )
         return DefaultKafkaConsumerFactory(configProps)
     }
 
@@ -38,8 +39,5 @@ class KafkaConsumerConfig {
         return factory
     }
 
-    @Bean
-    fun objectMapper(): ObjectMapper {
-        return ObjectMapper().registerKotlinModule()
-    }
+    @Bean fun objectMapper(): ObjectMapper = ObjectMapper().registerKotlinModule()
 }

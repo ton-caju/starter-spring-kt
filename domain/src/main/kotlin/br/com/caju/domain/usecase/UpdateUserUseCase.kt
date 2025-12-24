@@ -7,11 +7,12 @@ import br.com.caju.domain.port.driven.UserUpdatedEvent
 
 class UpdateUserUseCase(
     private val userRepository: UserRepository,
-    private val eventPublisher: EventPublisher
+    private val eventPublisher: EventPublisher,
 ) {
     fun execute(user: User): User {
-        val existingUser = userRepository.findById(user.id)
-            ?: throw IllegalArgumentException("User with id ${user.id} not found")
+        val existingUser =
+            userRepository.findById(user.id)
+                ?: throw IllegalArgumentException("User with id ${user.id} not found")
 
         val updatedUser = userRepository.update(user)
 
@@ -19,7 +20,7 @@ class UpdateUserUseCase(
             UserUpdatedEvent(
                 userId = updatedUser.id.toString(),
                 name = updatedUser.name,
-                email = updatedUser.email
+                email = updatedUser.email,
             )
         )
 

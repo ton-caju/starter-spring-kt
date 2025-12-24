@@ -7,7 +7,7 @@ import br.com.caju.domain.port.driven.UserRepository
 
 class CreateUserUseCase(
     private val userRepository: UserRepository,
-    private val eventPublisher: EventPublisher
+    private val eventPublisher: EventPublisher,
 ) {
     fun execute(user: User): User {
         if (userRepository.existsByEmail(user.email)) {
@@ -20,7 +20,7 @@ class CreateUserUseCase(
             UserCreatedEvent(
                 userId = savedUser.id.toString(),
                 name = savedUser.name,
-                email = savedUser.email
+                email = savedUser.email,
             )
         )
 

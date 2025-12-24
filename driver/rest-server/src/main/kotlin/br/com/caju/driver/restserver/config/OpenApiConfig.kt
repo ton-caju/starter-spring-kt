@@ -12,18 +12,14 @@ import org.springframework.context.annotation.Configuration
 class OpenApiConfig {
 
     @Bean
-    fun customOpenAPI(): OpenAPI {
-        return OpenAPI()
+    fun customOpenAPI(): OpenAPI =
+        OpenAPI()
             .info(
                 Info()
                     .title("User Management API")
                     .version("1.0.0")
                     .description("API for managing users with hexagonal architecture")
-                    .contact(
-                        Contact()
-                            .name("Caju Team")
-                            .email("support@caju.com.br")
-                    )
+                    .contact(Contact().name("Caju Team").email("support@caju.com.br"))
                     .license(
                         License()
                             .name("Apache 2.0")
@@ -32,10 +28,7 @@ class OpenApiConfig {
             )
             .servers(
                 listOf(
-                    Server()
-                        .url("http://localhost:8080")
-                        .description("Local Development Server")
+                    Server().url("http://localhost:8080").description("Local Development Server")
                 )
             )
-    }
 }

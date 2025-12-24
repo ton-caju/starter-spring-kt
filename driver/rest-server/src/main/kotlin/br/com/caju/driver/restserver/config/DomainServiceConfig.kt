@@ -17,7 +17,7 @@ class DomainServiceConfig {
     @Bean
     fun userManagement(
         userRepository: UserRepository,
-        eventPublisher: EventPublisher
+        eventPublisher: EventPublisher,
     ): UserManagement {
         // Use cases são criados internamente e não expostos como beans públicos
         val createUserUseCase = CreateUserUseCase(userRepository, eventPublisher)
@@ -29,7 +29,7 @@ class DomainServiceConfig {
             createUserUseCase,
             getUserUseCase,
             updateUserUseCase,
-            deleteUserUseCase
+            deleteUserUseCase,
         )
     }
 }

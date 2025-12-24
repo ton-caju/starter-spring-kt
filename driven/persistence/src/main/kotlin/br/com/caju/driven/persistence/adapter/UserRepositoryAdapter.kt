@@ -4,13 +4,11 @@ import br.com.caju.domain.model.User
 import br.com.caju.domain.port.driven.UserRepository
 import br.com.caju.driven.persistence.mapper.UserMapper
 import br.com.caju.driven.persistence.repository.JpaUserRepository
-import org.springframework.stereotype.Component
 import java.util.UUID
+import org.springframework.stereotype.Component
 
 @Component
-class UserRepositoryAdapter(
-    private val jpaUserRepository: JpaUserRepository
-) : UserRepository {
+class UserRepositoryAdapter(private val jpaUserRepository: JpaUserRepository) : UserRepository {
 
     override fun save(user: User): User {
         val entity = UserMapper.toEntity(user)
@@ -18,16 +16,10 @@ class UserRepositoryAdapter(
         return UserMapper.toDomain(savedEntity)
     }
 
-    override fun findById(id: UUID): User? {
-        return jpaUserRepository.findById(id)
-            .map { UserMapper.toDomain(it) }
-            .orElse(null)
-    }
+    override fun findById(id: UUID): User? =
+        jpaUserRepository.findById(id).map { UserMapper.toDomain(it) }.orElse(null)
 
-    override fun findAll(): List<User> {
-        return jpaUserRepository.findAll()
-            .map { UserMapper.toDomain(it) }
-    }
+    override fun findAll(): List<User> = jpaUserRepository.findAll().map { UserMapper.toDomain(it) }
 
     override fun update(user: User): User {
         if (!jpaUserRepository.existsById(user.id)) {
@@ -42,7 +34,5 @@ class UserRepositoryAdapter(
         jpaUserRepository.deleteById(id)
     }
 
-    override fun existsByEmail(email: String): Boolean {
-        return jpaUserRepository.existsByEmail(email)
-    }
+    override fun existsByEmail(email: String): Boolean = jpaUserRepository.existsByEmail(email)
 }

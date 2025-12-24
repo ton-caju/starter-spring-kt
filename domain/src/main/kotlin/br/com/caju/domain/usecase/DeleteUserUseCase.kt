@@ -7,16 +7,15 @@ import java.util.UUID
 
 class DeleteUserUseCase(
     private val userRepository: UserRepository,
-    private val eventPublisher: EventPublisher
+    private val eventPublisher: EventPublisher,
 ) {
     fun execute(id: UUID) {
-        val user = userRepository.findById(id)
-            ?: throw IllegalArgumentException("User with id $id not found")
+        val user =
+            userRepository.findById(id)
+                ?: throw IllegalArgumentException("User with id $id not found")
 
         userRepository.deleteById(id)
 
-        eventPublisher.publish(
-            UserDeletedEvent(userId = id.toString())
-        )
+        eventPublisher.publish(UserDeletedEvent(userId = id.toString()))
     }
 }

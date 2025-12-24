@@ -1,6 +1,4 @@
-plugins {
-    kotlin("jvm")
-}
+plugins { kotlin("jvm") }
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -8,6 +6,4 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
-tasks.withType<Test> {
-    useJUnitPlatform()
-}
+tasks.withType<Test> { useJUnitPlatform() }

@@ -9,17 +9,16 @@ data class UserResponse(
     val name: String,
     val email: String,
     val phone: String,
-    val birthday: LocalDate
+    val birthday: LocalDate,
 ) {
     companion object {
-        fun fromDomain(user: User): UserResponse {
-            return UserResponse(
+        fun fromDomain(user: User): UserResponse =
+            UserResponse(
                 id = user.id,
                 name = user.name,
                 email = user.email,
                 phone = user.phone,
-                birthday = user.birthday
+                birthday = user.birthday,
             )
-        }
     }
 }

@@ -5,14 +5,9 @@ import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.stereotype.Component
 
 @Component
-class UserEventListener(
-    private val objectMapper: ObjectMapper
-) {
+class UserEventListener(private val objectMapper: ObjectMapper) {
 
-    @KafkaListener(
-        topics = ["user-events"],
-        groupId = "user-event-consumer-group"
-    )
+    @KafkaListener(topics = ["user-events"], groupId = "user-event-consumer-group")
     fun handleUserEvent(message: String) {
         try {
             println("Received event: $message")

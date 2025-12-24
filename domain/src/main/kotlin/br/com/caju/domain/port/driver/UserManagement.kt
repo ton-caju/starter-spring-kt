@@ -5,8 +5,12 @@ import java.util.UUID
 
 interface UserManagement {
     fun createUser(user: User): User
+
     fun getUserById(id: UUID): User?
+
     fun getAllUsers(): List<User>
+
     fun updateUser(user: User): User
+
     fun deleteUser(id: UUID)
 }

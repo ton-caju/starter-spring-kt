@@ -11,10 +11,5 @@ class WebClientConfig {
     @Value("\${external.service.base-url:http://localhost:8081}")
     private lateinit var baseUrl: String
 
-    @Bean
-    fun webClient(): WebClient {
-        return WebClient.builder()
-            .baseUrl(baseUrl)
-            .build()
-    }
+    @Bean fun webClient(): WebClient = WebClient.builder().baseUrl(baseUrl).build()
 }

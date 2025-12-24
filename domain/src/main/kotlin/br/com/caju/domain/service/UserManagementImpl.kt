@@ -12,24 +12,16 @@ class UserManagementImpl(
     private val createUserUseCase: CreateUserUseCase,
     private val getUserUseCase: GetUserUseCase,
     private val updateUserUseCase: UpdateUserUseCase,
-    private val deleteUserUseCase: DeleteUserUseCase
+    private val deleteUserUseCase: DeleteUserUseCase,
 ) : UserManagement {
 
-    override fun createUser(user: User): User {
-        return createUserUseCase.execute(user)
-    }
+    override fun createUser(user: User): User = createUserUseCase.execute(user)
 
-    override fun getUserById(id: UUID): User? {
-        return getUserUseCase.execute(id)
-    }
+    override fun getUserById(id: UUID): User? = getUserUseCase.execute(id)
 
-    override fun getAllUsers(): List<User> {
-        return getUserUseCase.executeAll()
-    }
+    override fun getAllUsers(): List<User> = getUserUseCase.executeAll()
 
-    override fun updateUser(user: User): User {
-        return updateUserUseCase.execute(user)
-    }
+    override fun updateUser(user: User): User = updateUserUseCase.execute(user)
 
     override fun deleteUser(id: UUID) {
         deleteUserUseCase.execute(id)
