@@ -1,22 +1,11 @@
 package br.com.caju.driver.eventconsumer.listener
 
-import br.com.caju.driver.eventconsumer.config.AbstractIntegrationTest
+import br.com.caju.driver.eventconsumer.config.EventAbstractIntegrationTest
 import io.kotest.matchers.shouldBe
 import java.util.concurrent.TimeUnit
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.kafka.core.KafkaTemplate
-import org.springframework.kafka.test.context.EmbeddedKafka
-import org.springframework.test.annotation.DirtiesContext
 
-@EmbeddedKafka(partitions = 1, topics = ["user-events"])
-@DirtiesContext
-@org.springframework.context.annotation.Import(
-    br.com.caju.driver.eventconsumer.config.TestKafkaConfig::class
-)
-class UserEventListenerIntegrationTest : AbstractIntegrationTest() {
-
-    @Autowired private lateinit var kafkaTemplate: KafkaTemplate<String, String>
+class UserEventListenerIntegrationTest : EventAbstractIntegrationTest() {
 
     @Test
     fun `should consume USER_CREATED event successfully`() {

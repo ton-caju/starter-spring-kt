@@ -1,45 +1,22 @@
 package br.com.caju.driver.restserver.controller
 
-import br.com.caju.domain.port.driven.EventPublisher
-import br.com.caju.driver.restserver.config.AbstractIntegrationTest
+import br.com.caju.driver.restserver.config.RestAbstractIntegrationTest
 import br.com.caju.driver.restserver.dto.UserRequest
 import br.com.caju.driver.restserver.dto.UserResponse
-import com.ninjasquad.springmockk.MockkBean
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
-import io.mockk.justRun
 import java.time.LocalDate
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.web.server.LocalServerPort
-import org.springframework.context.annotation.Import
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.client.HttpClientErrorException
-import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.exchange
 import org.springframework.web.client.getForEntity
 import org.springframework.web.client.postForEntity
 
-@Import(br.com.caju.driver.restserver.config.TestConfig::class)
-@org.springframework.test.annotation.DirtiesContext
-class UserControllerIntegrationTest : AbstractIntegrationTest() {
-
-    @LocalServerPort private var port: Int = 0
-
-    @Autowired private lateinit var restTemplate: RestTemplate
-
-    @MockkBean private lateinit var eventPublisher: EventPublisher
-
-    private fun baseUrl() = "http://localhost:$port/api/users"
-
-    @BeforeEach
-    fun setup() {
-        justRun { eventPublisher.publish(any()) }
-    }
+class UserControllerIntegrationTest : RestAbstractIntegrationTest() {
 
     @Test
     fun `should create user successfully`() {
@@ -52,7 +29,7 @@ class UserControllerIntegrationTest : AbstractIntegrationTest() {
             )
 
         val response: ResponseEntity<UserResponse> =
-            restTemplate.postForEntity(baseUrl(), userRequest)
+            restTemplate.postForEntity(baseUrl("/api/users"), userRequest)
 
         response.statusCode shouldBe HttpStatus.CREATED
         val user = response.body
@@ -76,12 +53,12 @@ class UserControllerIntegrationTest : AbstractIntegrationTest() {
             )
 
         val createResponse: ResponseEntity<UserResponse> =
-            restTemplate.postForEntity(baseUrl(), userRequest)
+            restTemplate.postForEntity(baseUrl("/api/users"), userRequest)
         val createdUser = createResponse.body!!
 
         // Get the user
         val response: ResponseEntity<UserResponse> =
-            restTemplate.getForEntity("${baseUrl()}/${createdUser.id}")
+            restTemplate.getForEntity("${baseUrl("/api/users")}/${createdUser.id}")
 
         response.statusCode shouldBe HttpStatus.OK
         val user = response.body
@@ -109,10 +86,11 @@ class UserControllerIntegrationTest : AbstractIntegrationTest() {
                 LocalDate.of(1991, 2, 2),
             )
 
-        restTemplate.postForEntity(baseUrl(), user1, UserResponse::class.java)
-        restTemplate.postForEntity(baseUrl(), user2, UserResponse::class.java)
+        restTemplate.postForEntity(baseUrl("/api/users"), user1, UserResponse::class.java)
+        restTemplate.postForEntity(baseUrl("/api/users"), user2, UserResponse::class.java)
 
-        val response: ResponseEntity<Array<UserResponse>> = restTemplate.getForEntity(baseUrl())
+        val response: ResponseEntity<Array<UserResponse>> =
+            restTemplate.getForEntity(baseUrl("/api/users"))
 
         response.statusCode shouldBe HttpStatus.OK
         val users = response.body
@@ -132,7 +110,7 @@ class UserControllerIntegrationTest : AbstractIntegrationTest() {
             )
 
         val createResponse: ResponseEntity<UserResponse> =
-            restTemplate.postForEntity(baseUrl(), userRequest)
+            restTemplate.postForEntity(baseUrl("/api/users"), userRequest)
         val createdUser = createResponse.body!!
 
         // Update the user
@@ -140,7 +118,7 @@ class UserControllerIntegrationTest : AbstractIntegrationTest() {
 
         val response: ResponseEntity<UserResponse> =
             restTemplate.exchange(
-                "${baseUrl()}/${createdUser.id}",
+                "${baseUrl("/api/users")}/${createdUser.id}",
                 HttpMethod.PUT,
                 HttpEntity(updateRequest),
             )
@@ -165,15 +143,15 @@ class UserControllerIntegrationTest : AbstractIntegrationTest() {
             )
 
         val createResponse: ResponseEntity<UserResponse> =
-            restTemplate.postForEntity(baseUrl(), userRequest)
+            restTemplate.postForEntity(baseUrl("/api/users"), userRequest)
         val createdUser = createResponse.body!!
 
         // Delete the user
-        restTemplate.delete("${baseUrl()}/${createdUser.id}")
+        restTemplate.delete("${baseUrl("/api/users")}/${createdUser.id}")
 
         // Verify user is deleted
         try {
-            restTemplate.getForEntity<UserResponse>("${baseUrl()}/${createdUser.id}")
+            restTemplate.getForEntity<UserResponse>("${baseUrl("/api/users")}/${createdUser.id}")
             throw AssertionError("Expected HttpClientErrorException.NotFound")
         } catch (e: HttpClientErrorException.NotFound) {
             e.statusCode shouldBe HttpStatus.NOT_FOUND
