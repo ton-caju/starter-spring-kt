@@ -4,7 +4,9 @@ import br.com.caju.driver.eventconsumer.config.EventAbstractIntegrationTest
 import io.kotest.matchers.shouldBe
 import java.util.concurrent.TimeUnit
 import org.junit.jupiter.api.Test
+import org.springframework.kafka.test.context.EmbeddedKafka
 
+@EmbeddedKafka(partitions = 1, topics = ["user-events"])
 class UserEventListenerIntegrationTest : EventAbstractIntegrationTest() {
 
     @Test
