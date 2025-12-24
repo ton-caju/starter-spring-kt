@@ -1,6 +1,7 @@
 package br.com.caju.driver.restserver.controller
 
 import br.com.caju.domain.port.driven.EventPublisher
+import br.com.caju.driver.restserver.config.AbstractIntegrationTest
 import br.com.caju.driver.restserver.dto.UserRequest
 import br.com.caju.driver.restserver.dto.UserResponse
 import com.ninjasquad.springmockk.MockkBean
@@ -11,24 +12,21 @@ import java.time.LocalDate
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.test.context.ActiveProfiles
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.exchange
 import org.springframework.web.client.getForEntity
 import org.springframework.web.client.postForEntity
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test")
 @Import(br.com.caju.driver.restserver.config.TestConfig::class)
-class UserControllerIntegrationTest {
+@org.springframework.test.annotation.DirtiesContext
+class UserControllerIntegrationTest : AbstractIntegrationTest() {
 
     @LocalServerPort private var port: Int = 0
 
