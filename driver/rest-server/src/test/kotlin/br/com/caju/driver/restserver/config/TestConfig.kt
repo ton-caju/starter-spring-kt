@@ -6,6 +6,5 @@ import org.springframework.web.client.RestTemplate
 
 @TestConfiguration
 class TestConfig {
-    @Bean
-    fun restTemplate(): RestTemplate = RestTemplate()
+    @Bean fun restTemplate(): RestTemplate = RestTemplate()
 }

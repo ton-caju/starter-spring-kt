@@ -30,14 +30,11 @@ import org.springframework.web.client.postForEntity
 @Import(br.com.caju.driver.restserver.config.TestConfig::class)
 class UserControllerIntegrationTest {
 
-    @LocalServerPort
-    private var port: Int = 0
+    @LocalServerPort private var port: Int = 0
 
-    @Autowired
-    private lateinit var restTemplate: RestTemplate
+    @Autowired private lateinit var restTemplate: RestTemplate
 
-    @MockkBean
-    private lateinit var eventPublisher: EventPublisher
+    @MockkBean private lateinit var eventPublisher: EventPublisher
 
     private fun baseUrl() = "http://localhost:$port/api/users"
 
@@ -117,8 +114,7 @@ class UserControllerIntegrationTest {
         restTemplate.postForEntity(baseUrl(), user1, UserResponse::class.java)
         restTemplate.postForEntity(baseUrl(), user2, UserResponse::class.java)
 
-        val response: ResponseEntity<Array<UserResponse>> =
-            restTemplate.getForEntity(baseUrl())
+        val response: ResponseEntity<Array<UserResponse>> = restTemplate.getForEntity(baseUrl())
 
         response.statusCode shouldBe HttpStatus.OK
         val users = response.body
@@ -142,8 +138,7 @@ class UserControllerIntegrationTest {
         val createdUser = createResponse.body!!
 
         // Update the user
-        val updateRequest =
-            userRequest.copy(name = "Updated Name", phone = "+5511555555555")
+        val updateRequest = userRequest.copy(name = "Updated Name", phone = "+5511555555555")
 
         val response: ResponseEntity<UserResponse> =
             restTemplate.exchange(

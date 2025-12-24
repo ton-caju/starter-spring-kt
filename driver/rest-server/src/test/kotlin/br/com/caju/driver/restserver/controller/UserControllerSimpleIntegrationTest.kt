@@ -20,17 +20,16 @@ import org.springframework.web.client.postForEntity
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-@org.springframework.context.annotation.Import(br.com.caju.driver.restserver.config.TestConfig::class)
+@org.springframework.context.annotation.Import(
+    br.com.caju.driver.restserver.config.TestConfig::class
+)
 class UserControllerSimpleIntegrationTest {
 
-    @LocalServerPort
-    private var port: Int = 0
+    @LocalServerPort private var port: Int = 0
 
-    @Autowired
-    private lateinit var restTemplate: RestTemplate
+    @Autowired private lateinit var restTemplate: RestTemplate
 
-    @MockkBean
-    private lateinit var eventPublisher: EventPublisher
+    @MockkBean private lateinit var eventPublisher: EventPublisher
 
     private fun baseUrl() = "http://localhost:$port/api/users"
 
