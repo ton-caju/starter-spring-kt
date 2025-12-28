@@ -1,5 +1,6 @@
 package br.com.caju.domain.usecase
 
+import br.com.caju.domain.exception.ResourceNotFoundException
 import br.com.caju.domain.model.User
 import br.com.caju.domain.port.driven.EventPublisher
 import br.com.caju.domain.port.driven.UserDeletedEvent
@@ -48,9 +49,9 @@ class DeleteUserUseCaseTest :
 
                 every { userRepository.findById(userId) } returns null
 
-                then("should throw IllegalArgumentException") {
+                then("should throw ResourceNotFoundException") {
                     val exception =
-                        shouldThrow<IllegalArgumentException> { useCase.execute(userId) }
+                        shouldThrow<ResourceNotFoundException> { useCase.execute(userId) }
                     exception.message shouldBe "User with id $userId not found"
                 }
             }

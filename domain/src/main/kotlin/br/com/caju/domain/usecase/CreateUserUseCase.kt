@@ -1,5 +1,6 @@
 package br.com.caju.domain.usecase
 
+import br.com.caju.domain.exception.DuplicateResourceException
 import br.com.caju.domain.model.User
 import br.com.caju.domain.port.driven.EventPublisher
 import br.com.caju.domain.port.driven.UserCreatedEvent
@@ -11,7 +12,7 @@ class CreateUserUseCase(
 ) {
     fun execute(user: User): User {
         if (userRepository.existsByEmail(user.email)) {
-            throw IllegalArgumentException("User with email ${user.email} already exists")
+            throw DuplicateResourceException("User with email ${user.email} already exists")
         }
 
         val savedUser = userRepository.save(user)

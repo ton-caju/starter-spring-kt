@@ -1,5 +1,6 @@
 package br.com.caju.domain.usecase
 
+import br.com.caju.domain.exception.ResourceNotFoundException
 import br.com.caju.domain.model.User
 import br.com.caju.domain.port.driven.EventPublisher
 import br.com.caju.domain.port.driven.UserRepository
@@ -68,8 +69,8 @@ class UpdateUserUseCaseTest :
 
                 every { userRepository.findById(userId) } returns null
 
-                then("should throw IllegalArgumentException") {
-                    val exception = shouldThrow<IllegalArgumentException> { useCase.execute(user) }
+                then("should throw ResourceNotFoundException") {
+                    val exception = shouldThrow<ResourceNotFoundException> { useCase.execute(user) }
                     exception.message shouldBe "User with id ${user.id} not found"
                 }
             }

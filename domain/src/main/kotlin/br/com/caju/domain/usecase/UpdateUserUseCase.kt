@@ -1,5 +1,6 @@
 package br.com.caju.domain.usecase
 
+import br.com.caju.domain.exception.ResourceNotFoundException
 import br.com.caju.domain.model.User
 import br.com.caju.domain.port.driven.EventPublisher
 import br.com.caju.domain.port.driven.UserRepository
@@ -12,7 +13,7 @@ class UpdateUserUseCase(
     fun execute(user: User): User {
         val existingUser =
             userRepository.findById(user.id)
-                ?: throw IllegalArgumentException("User with id ${user.id} not found")
+                ?: throw ResourceNotFoundException("User with id ${user.id} not found")
 
         val updatedUser = userRepository.update(user)
 

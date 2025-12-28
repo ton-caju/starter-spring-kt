@@ -1,5 +1,6 @@
 package br.com.caju.domain.usecase
 
+import br.com.caju.domain.exception.DuplicateResourceException
 import br.com.caju.domain.model.User
 import br.com.caju.domain.port.driven.EventPublisher
 import br.com.caju.domain.port.driven.UserCreatedEvent
@@ -64,8 +65,9 @@ class CreateUserUseCaseTest :
 
                 every { userRepository.existsByEmail(user.email) } returns true
 
-                then("should throw IllegalArgumentException") {
-                    val exception = shouldThrow<IllegalArgumentException> { useCase.execute(user) }
+                then("should throw DuplicateResourceException") {
+                    val exception =
+                        shouldThrow<DuplicateResourceException> { useCase.execute(user) }
                     exception.message shouldBe "User with email ${user.email} already exists"
                 }
             }
