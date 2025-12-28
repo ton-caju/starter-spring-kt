@@ -7,6 +7,12 @@ plugins {
 	id("com.diffplug.spotless") version "8.1.0" apply false
 }
 
+extra["kotestVersion"] = "5.9.1"
+extra["mockkVersion"] = "1.13.13"
+extra["springmockkVersion"] = "4.0.2"
+extra["testcontainersVersion"] = "1.19.8"
+extra["springdocVersion"] = "2.8.14"
+
 allprojects {
 	group = "br.com.caju"
 	version = "0.0.1-SNAPSHOT"
@@ -54,5 +60,11 @@ subprojects {
 		val testImplementation by configurations
 
 		implementation(platform("org.springframework.boot:spring-boot-dependencies:4.0.1"))
+		testImplementation(platform("org.testcontainers:testcontainers-bom:${rootProject.extra["testcontainersVersion"]}"))
+		testImplementation(platform("io.kotest:kotest-bom:${rootProject.extra["kotestVersion"]}"))
+
+		implementation("org.jetbrains.kotlin:kotlin-reflect")
+
+		testImplementation("org.junit.platform:junit-platform-launcher")
 	}
 }
