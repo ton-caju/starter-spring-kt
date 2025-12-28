@@ -1,5 +1,8 @@
 package br.com.caju.driver.restserver.exception
 
+import br.com.caju.domain.exception.BusinessValidationException
+import br.com.caju.domain.exception.DuplicateResourceException
+import br.com.caju.domain.exception.ResourceNotFoundException
 import jakarta.servlet.http.HttpServletRequest
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -9,21 +12,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 
-/**
- * Global exception handler for REST controllers
- *
- * Provides consistent error responses across the API following RFC 7807 Problem Details format
- */
 @RestControllerAdvice
 class GlobalExceptionHandler {
 
     private val logger = LoggerFactory.getLogger(GlobalExceptionHandler::class.java)
 
-    /**
-     * Handles validation errors from @Valid annotations
-     *
-     * Extracts field errors and returns a structured response with all validation failures
-     */
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleValidationException(
         ex: MethodArgumentNotValidException,
@@ -52,11 +45,6 @@ class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse)
     }
 
-    /**
-     * Handles type mismatch errors (e.g., invalid UUID format)
-     *
-     * Returns 400 Bad Request with details about the type mismatch
-     */
     @ExceptionHandler(MethodArgumentTypeMismatchException::class)
     fun handleTypeMismatchException(
         ex: MethodArgumentTypeMismatchException,
@@ -76,14 +64,9 @@ class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse)
     }
 
-    /**
-     * Handles NoSuchElementException (typically from repository findById operations)
-     *
-     * Returns 404 Not Found
-     */
-    @ExceptionHandler(NoSuchElementException::class)
+    @ExceptionHandler(ResourceNotFoundException::class, NoSuchElementException::class)
     fun handleNotFoundException(
-        ex: NoSuchElementException,
+        ex: Exception,
         request: HttpServletRequest,
     ): ResponseEntity<ErrorResponse> {
         logger.warn("Resource not found on path ${request.requestURI}: ${ex.message}")
@@ -99,34 +82,42 @@ class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse)
     }
 
-    /**
-     * Handles IllegalArgumentException (typically from business logic validation)
-     *
-     * Returns 400 Bad Request
-     */
-    @ExceptionHandler(IllegalArgumentException::class)
-    fun handleIllegalArgumentException(
-        ex: IllegalArgumentException,
+    @ExceptionHandler(DuplicateResourceException::class)
+    fun handleDuplicateResourceException(
+        ex: DuplicateResourceException,
         request: HttpServletRequest,
     ): ResponseEntity<ErrorResponse> {
-        logger.warn("Illegal argument on path ${request.requestURI}: ${ex.message}")
+        logger.warn("Duplicate resource on path ${request.requestURI}: ${ex.message}")
 
         val errorResponse =
             ErrorResponse(
-                status = HttpStatus.BAD_REQUEST.value(),
-                error = HttpStatus.BAD_REQUEST.reasonPhrase,
-                message = ex.message ?: "Invalid argument",
+                status = HttpStatus.CONFLICT.value(),
+                error = HttpStatus.CONFLICT.reasonPhrase,
+                message = ex.message ?: "Resource already exists",
                 path = request.requestURI,
             )
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse)
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse)
     }
 
-    /**
-     * Catches any other unhandled exceptions
-     *
-     * Returns 500 Internal Server Error with minimal details for security
-     */
+    @ExceptionHandler(BusinessValidationException::class)
+    fun handleBusinessValidationException(
+        ex: BusinessValidationException,
+        request: HttpServletRequest,
+    ): ResponseEntity<ErrorResponse> {
+        logger.warn("Business validation error on path ${request.requestURI}: ${ex.message}")
+
+        val errorResponse =
+            ErrorResponse(
+                status = HttpStatus.UNPROCESSABLE_ENTITY.value(),
+                error = HttpStatus.UNPROCESSABLE_ENTITY.reasonPhrase,
+                message = ex.message ?: "Business validation failed",
+                path = request.requestURI,
+            )
+
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(errorResponse)
+    }
+
     @ExceptionHandler(Exception::class)
     fun handleGenericException(
         ex: Exception,

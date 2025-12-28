@@ -1,5 +1,8 @@
 package br.com.caju.driver.restserver.exception
 
+import br.com.caju.domain.exception.BusinessValidationException
+import br.com.caju.domain.exception.DuplicateResourceException
+import br.com.caju.domain.exception.ResourceNotFoundException
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
@@ -22,7 +25,6 @@ class GlobalExceptionHandlerTest {
 
     @Test
     fun `should handle validation exception and return 400 with field errors`() {
-        // Given
         val bindingResult = BeanPropertyBindingResult(Any(), "userRequest")
         bindingResult.addError(
             FieldError(
@@ -50,10 +52,8 @@ class GlobalExceptionHandlerTest {
         val methodParameter = mock(MethodParameter::class.java)
         val exception = MethodArgumentNotValidException(methodParameter, bindingResult)
 
-        // When
         val response = handler.handleValidationException(exception, request)
 
-        // Then
         response.statusCode shouldBe HttpStatus.BAD_REQUEST
         val body = response.body
         body.shouldNotBeNull()
@@ -72,7 +72,6 @@ class GlobalExceptionHandlerTest {
 
     @Test
     fun `should handle type mismatch exception and return 400`() {
-        // Given
         val exception =
             MethodArgumentTypeMismatchException(
                 "invalid-uuid",
@@ -82,10 +81,8 @@ class GlobalExceptionHandlerTest {
                 Throwable("Type mismatch"),
             )
 
-        // When
         val response = handler.handleTypeMismatchException(exception, request)
 
-        // Then
         response.statusCode shouldBe HttpStatus.BAD_REQUEST
         val body = response.body
         body.shouldNotBeNull()
@@ -97,14 +94,11 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
-    fun `should handle not found exception and return 404`() {
-        // Given
-        val exception = NoSuchElementException("User not found with id: 123")
+    fun `should handle resource not found exception and return 404`() {
+        val exception = ResourceNotFoundException("User not found with id: 123")
 
-        // When
         val response = handler.handleNotFoundException(exception, request)
 
-        // Then
         response.statusCode shouldBe HttpStatus.NOT_FOUND
         val body = response.body
         body.shouldNotBeNull()
@@ -116,33 +110,59 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
-    fun `should handle illegal argument exception and return 400`() {
-        // Given
-        val exception = IllegalArgumentException("Email is already in use")
+    fun `should handle no such element exception and return 404`() {
+        val exception = NoSuchElementException("User not found with id: 123")
 
-        // When
-        val response = handler.handleIllegalArgumentException(exception, request)
+        val response = handler.handleNotFoundException(exception, request)
 
-        // Then
-        response.statusCode shouldBe HttpStatus.BAD_REQUEST
+        response.statusCode shouldBe HttpStatus.NOT_FOUND
         val body = response.body
         body.shouldNotBeNull()
-        body.status shouldBe 400
-        body.error shouldBe "Bad Request"
-        body.message shouldBe "Email is already in use"
+        body.status shouldBe 404
+        body.error shouldBe "Not Found"
+        body.message shouldBe "User not found with id: 123"
+        body.path shouldBe "/api/users"
+        body.errors shouldBe null
+    }
+
+    @Test
+    fun `should handle duplicate resource exception and return 409`() {
+        val exception = DuplicateResourceException("User with email already exists")
+
+        val response = handler.handleDuplicateResourceException(exception, request)
+
+        response.statusCode shouldBe HttpStatus.CONFLICT
+        val body = response.body
+        body.shouldNotBeNull()
+        body.status shouldBe 409
+        body.error shouldBe "Conflict"
+        body.message shouldBe "User with email already exists"
+        body.path shouldBe "/api/users"
+        body.errors shouldBe null
+    }
+
+    @Test
+    fun `should handle business validation exception and return 422`() {
+        val exception = BusinessValidationException("User age must be at least 18")
+
+        val response = handler.handleBusinessValidationException(exception, request)
+
+        response.statusCode shouldBe HttpStatus.UNPROCESSABLE_ENTITY
+        val body = response.body
+        body.shouldNotBeNull()
+        body.status shouldBe 422
+        body.error shouldBe "Unprocessable Entity"
+        body.message shouldBe "User age must be at least 18"
         body.path shouldBe "/api/users"
         body.errors shouldBe null
     }
 
     @Test
     fun `should handle generic exception and return 500`() {
-        // Given
         val exception = RuntimeException("Unexpected database error")
 
-        // When
         val response = handler.handleGenericException(exception, request)
 
-        // Then
         response.statusCode shouldBe HttpStatus.INTERNAL_SERVER_ERROR
         val body = response.body
         body.shouldNotBeNull()
