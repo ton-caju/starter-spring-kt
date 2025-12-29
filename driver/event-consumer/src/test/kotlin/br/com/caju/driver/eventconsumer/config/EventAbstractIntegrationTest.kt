@@ -23,6 +23,7 @@ abstract class EventAbstractIntegrationTest {
     companion object {
         @Container
         @ServiceConnection
+        @JvmField
         val postgresContainer: PostgreSQLContainer<*> =
             PostgreSQLContainer("postgres:16-alpine")
                 .withDatabaseName("testdb")

@@ -38,3 +38,11 @@ out/
 
 ### Kotlin ###
 .kotlin
+
+### SonarQube ###
+.sonar/
+.scannerwork/
+
+### JaCoCo ###
+*.exec
+jacoco.xml

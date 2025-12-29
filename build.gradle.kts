@@ -5,6 +5,8 @@ plugins {
 	id("org.springframework.boot") version "4.0.1" apply false
 	id("io.spring.dependency-management") version "1.1.7" apply false
 	id("com.diffplug.spotless") version "8.1.0" apply false
+	id("org.sonarqube") version "7.2.1.6560"
+	id("jacoco")
 }
 
 extra["kotestVersion"] = "5.9.1"
@@ -25,11 +27,16 @@ allprojects {
 subprojects {
 	apply(plugin = "org.jetbrains.kotlin.jvm")
 	apply(plugin = "com.diffplug.spotless")
+	apply(plugin = "jacoco")
 
 	configure<JavaPluginExtension> {
 		toolchain {
 			languageVersion = JavaLanguageVersion.of(21)
 		}
+	}
+
+	configure<JacocoPluginExtension> {
+		toolVersion = "0.8.12"
 	}
 
 	configure<com.diffplug.gradle.spotless.SpotlessExtension> {
@@ -55,6 +62,29 @@ subprojects {
 		}
 	}
 
+	tasks.withType<Test> {
+		useJUnitPlatform()
+		finalizedBy("jacocoTestReport")
+	}
+
+	tasks.named<JacocoReport>("jacocoTestReport") {
+		reports {
+			xml.required.set(true)
+			html.required.set(true)
+			csv.required.set(false)
+		}
+	}
+
+	tasks.named<JacocoCoverageVerification>("jacocoTestCoverageVerification") {
+		violationRules {
+			rule {
+				limit {
+					minimum = "0.70".toBigDecimal()
+				}
+			}
+		}
+	}
+
 	dependencies {
 		val implementation by configurations
 		val testImplementation by configurations
@@ -66,5 +96,28 @@ subprojects {
 		implementation("org.jetbrains.kotlin:kotlin-reflect")
 
 		testImplementation("org.junit.platform:junit-platform-launcher")
+	}
+}
+
+sonar {
+	properties {
+		property("sonar.projectKey", "caju_starter")
+		property("sonar.projectName", "Starter - Hexagonal Architecture")
+		property("sonar.projectVersion", version.toString())
+		property("sonar.sourceEncoding", "UTF-8")
+		property("sonar.kotlin.detekt.reportPaths", "**/build/reports/detekt/detekt.xml")
+		property("sonar.coverage.jacoco.xmlReportPaths", "**/build/reports/jacoco/test/jacocoTestReport.xml")
+		property("sonar.java.binaries", "**/build/classes")
+
+		// Exclusões de análise
+		property("sonar.exclusions", "**/*Application.kt,**/*Config.kt,**/build/**,**/generated/**")
+		property("sonar.coverage.exclusions", "**/*Application.kt,**/*Config.kt,**/dto/**,**/entity/**,**/model/**")
+
+		// Configurações de qualidade
+		property("sonar.qualitygate.wait", "false")
+		property("sonar.cpd.exclusions", "**/dto/**,**/entity/**,**/model/**")
+
+		// Análise de duplicação
+		property("sonar.cpd.kotlin.minimumTokens", "100")
 	}
 }
